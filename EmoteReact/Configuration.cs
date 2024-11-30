@@ -1,6 +1,7 @@
 using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
+using System.Collections.Generic;
 
 namespace EmoteReact;
 
@@ -11,6 +12,8 @@ public class Configuration : IPluginConfiguration
 
     public bool IsConfigWindowMovable { get; set; } = true;
     public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
+
+    public Dictionary<string, Dictionary<int, Reaction>> data = new Dictionary<string, Dictionary<int, Reaction>>();
 
     // the below exist just to make saving less cumbersome
     public void Save()

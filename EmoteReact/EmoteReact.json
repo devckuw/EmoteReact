@@ -1,12 +1,22 @@
 {
-  "Author": "your name here",
-  "Name": "Emote React",
-  "Punchline": "A short one-liner that shows up in /xlplugins.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "ApplicableVersion": "any",
-  "Tags": [
-    "sample",
-    "plugin",
-    "goats"
-  ]
+    "Author": "Loody",
+    "Name": "Emote React",
+    "InternalName": "Emote React",
+    "AssemblyVersion": "0.0.1.0",
+    "Description": "React to emotes with a command, can add different reaction to any person.",
+    "ApplicableVersion": "any",
+    "IconUrl": "https://raw.githubusercontent.com/devckuw/EmoteReact/master/EmoteReact/images/icon.png",
+    "RepoUrl": "https://github.com/devckuw/EmoteReact",
+    "Tags": [
+        "emote",
+        "plugin",
+        "rp"
+    ],
+    "DalamudApiLevel": 11,
+    "LoadRequiredState": 0,
+    "LoadSync": false,
+    "CanUnloadAsync": false,
+    "LoadPriority": 0,
+    "Punchline": "React to emotes with a command.",
+    "AcceptsFeedback": true
 }
