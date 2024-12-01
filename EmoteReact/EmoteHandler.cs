@@ -11,17 +11,25 @@ using System.Threading.Tasks;
 
 namespace EmoteReact
 {
-    public struct Reaction
+    public class Reaction
     {
         public string command;
         public int cd;
         public int lastProc;
+        public bool isEnable;
 
         public Reaction(string command, int cd)
         {
             this.command = command;
             this.cd = Math.Max(0, cd);
             this.lastProc = 0;
+            this.isEnable = true;
+        }
+
+        public void Toggle()
+        {
+            Plugin.Log.Debug($"{isEnable} => {!isEnable}");
+            isEnable = !isEnable;
         }
     }
 
@@ -96,8 +104,8 @@ namespace EmoteReact
             if (!data[charName].ContainsKey(emoteId))
                 return;
             cmds.Clear();
-            cmds.Add(data[charName][emoteId].command);
-            //ChatHelper.SendChatMessage(data[charName][emoteId].command);
+            if (data[charName][emoteId].isEnable)
+                cmds.Add(data[charName][emoteId].command);
         }
 
     }

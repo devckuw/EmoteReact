@@ -36,7 +36,7 @@ public class MainWindow : Window, IDisposable
     {
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(700, 500),
+            MinimumSize = new Vector2(740, 500),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
@@ -63,13 +63,14 @@ public class MainWindow : Window, IDisposable
             100 + (70 * ImGuiHelpers.GlobalScale),
             100 + (10 * ImGuiHelpers.GlobalScale),
             100 + (26 * ImGuiHelpers.GlobalScale),
-            ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - (100 + 100 + 100 + 40) - ((70 + 10 + 26) * ImGuiHelpers.GlobalScale),
+            ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - (100 + 100 + 100 + 50 + 40) - ((70 + 10 + 26) * ImGuiHelpers.GlobalScale),
+            50,
             40
         ];
 
         // name server emote raction
-        ImGui.Columns(5);
-        for (int i = 0; i < 5; i++)
+        ImGui.Columns(6);
+        for (int i = 0; i < 6; i++)
         {
             ImGui.SetColumnWidth(i, sizes[i]);
         }
@@ -85,7 +86,7 @@ public class MainWindow : Window, IDisposable
             string world = character.Key.Split(" ")[2];
             foreach (var em in character.Value)
             {
-                DrawLine(name, world, plugin.emoteHandler.emotes[em.Key].ToString(), em.Value.command);
+                DrawLine(name, world, em.Key, em.Value.command);
             }
         }
         num = 0;
@@ -113,25 +114,37 @@ public class MainWindow : Window, IDisposable
         ImGui.NextColumn();
         ImGui.TextUnformatted("Reaction");
         ImGui.NextColumn();
+        ImGui.TextUnformatted("Enable");
+        ImGui.NextColumn();
         ImGui.TextUnformatted("");
         ImGui.NextColumn();
         ImGui.Separator();
     }
 
-    private void DrawLine(string name, string server, string emote, string reaction)
+    private void DrawLine(string name, string server, int emote, string reaction)
     {
         ImGui.TextUnformatted(name);
         ImGui.NextColumn();
+
         ImGui.TextUnformatted(server);
         ImGui.NextColumn();
-        ImGui.TextUnformatted(emote);
+
+        ImGui.TextUnformatted(plugin.emoteHandler.emotes[emote].ToString());
         ImGui.NextColumn();
+
         ImGui.TextUnformatted(reaction);
         ImGui.NextColumn();
+
+        if (ImGui.Checkbox($"##{name}{server}{emote}", ref plugin.emoteHandler.data[$"{name} {server}"][emote].isEnable))
+        {
+
+        }
+        ImGui.NextColumn();
+
         if (ImGuiComponents.IconButton(num++, FontAwesomeIcon.Trash))
         {
             Plugin.Log.Debug($"add to remove : {name} {server} {emote}");
-            toRemove.Add(($"{name} {server}", plugin.emoteHandler.GetEmoteId(emote)));
+            toRemove.Add(($"{name} {server}", emote));
         }
         ImGui.NextColumn();
         ImGui.Separator();
@@ -176,14 +189,14 @@ public class MainWindow : Window, IDisposable
         ImGui.InputTextWithHint("##reactinput", "/Command to execute", ref inputReaction, 200);
         ImGui.NextColumn();
 
+        ImGui.NextColumn();
+
         if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
         {
             if (inputName.Split(" ").Length == 2 && inputWorld != "World" && inputEmote != "Emote" && inputReaction != string.Empty)
             {
                 plugin.emoteHandler.AddEntry($"{inputName} {inputWorld}", inputEmoteInt, inputReaction, 0);
-                inputName = "";
                 inputReaction = "";
-                inputWorld = "World";
                 inputEmote = "Emote";
                 inputEmoteInt = -1;
             }
