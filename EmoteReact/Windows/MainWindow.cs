@@ -19,8 +19,8 @@ public class MainWindow : Window, IDisposable
     private Plugin plugin;
     private string inputName = "";
     private string inputReaction = "";
-    private string inputWorld = "World";
-    private string inputEmote = "Emote";
+    private string inputWorld = "";
+    private string inputEmote = "";
     private int inputEmoteInt = -1;
     private List<string> worlds = new List<string>();
     private List<(int, string)> emotes = new List<(int, string)>();
@@ -33,11 +33,11 @@ public class MainWindow : Window, IDisposable
     // So that the user will see "My Amazing Window" as window title,
     // but for ImGui the ID is "My Amazing Window##With a hidden ID"
     public MainWindow(Plugin plugin)
-        : base("Emote React##With a hidden ID", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+        : base("Emote React##With a hidden ID")
     {
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(740, 500),
+            MinimumSize = new Vector2(740, 300),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
@@ -51,7 +51,9 @@ public class MainWindow : Window, IDisposable
         foreach (var emote in Plugin.DataManager.GameData.GetExcelSheet<Emote>())
         {
             if (!emote.Name.IsEmpty)
-                emotes.Add(((int)emote.RowId,emote.Name.ToString()));
+            {
+                emotes.Add(((int)emote.RowId, emote.Name.ToString()));
+            }
         }
 
     }
@@ -174,7 +176,8 @@ public class MainWindow : Window, IDisposable
         ImGui.NextColumn();
 
         ImGui.SetNextItemWidth(sizes[1] - 15);
-        if (ImGui.BeginCombo("##worldinput", inputWorld))
+        DrawCommon.DropDownFilter("worldinput", "World", ref inputWorld, worlds);
+        /*if (ImGui.BeginCombo("##worldinput", inputWorld))
         {
             foreach (var w in worlds)
             {
@@ -184,11 +187,12 @@ public class MainWindow : Window, IDisposable
                 }
             }
             ImGui.EndCombo();
-        }
+        }*/
         ImGui.NextColumn();
 
         ImGui.SetNextItemWidth(sizes[2] - 15);
-        if (ImGui.BeginCombo("##emoteinput", inputEmote))
+        DrawCommon.DropDownFilterEmote("emoteinput", "Emote", ref inputEmote, ref inputEmoteInt, emotes);
+        /*if (ImGui.BeginCombo("##emoteinput", inputEmote))
         {
             foreach (var e in emotes)
             {
@@ -199,7 +203,7 @@ public class MainWindow : Window, IDisposable
                 }
             }
             ImGui.EndCombo();
-        }
+        }*/
         ImGui.NextColumn();
 
         ImGui.SetNextItemWidth(sizes[3] - 15);
