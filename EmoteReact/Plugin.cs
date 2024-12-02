@@ -8,6 +8,7 @@ using EmoteReact.Windows;
 using SamplePlugin;
 using Dalamud.Game;
 using combatHelper.Utils;
+using Dalamud.Game.ClientState.Objects;
 
 namespace EmoteReact;
 
@@ -24,6 +25,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] public static IGameGui GameGui { get; private set; } = null!;
     [PluginService] public static IDataManager DataManager { get; private set; } = null!;
     [PluginService] public static IFramework Framework { get; private set; } = null!;
+    [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
 
     private const string CommandName = "/emotereact";
 

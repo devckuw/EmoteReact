@@ -99,14 +99,28 @@ namespace EmoteReact
 
         public void ProcessEmote(int emoteId, string charName)
         {
-            if (!data.ContainsKey(charName))
-                return;
-            if (!data[charName].ContainsKey(emoteId))
-                return;
-            cmds.Clear();
-            if (data[charName][emoteId].isEnable)
-                cmds.Add(data[charName][emoteId].command);
+            bool tryCommon = true;
+            if (data.ContainsKey(charName))
+            {
+                if (data[charName].ContainsKey(emoteId))
+                {
+                    cmds.Clear();
+                    if (data[charName][emoteId].isEnable)
+                    {
+                        cmds.Add(data[charName][emoteId].command);
+                        tryCommon = false;
+                    }
+                }
+            }
+            if (data.ContainsKey("Common") && tryCommon)
+            {
+                if (data["Common"].ContainsKey(emoteId))
+                {
+                    cmds.Clear();
+                    if (data["Common"][emoteId].isEnable)
+                        cmds.Add(data["Common"][emoteId].command);
+                }
+            }
         }
-
     }
 }

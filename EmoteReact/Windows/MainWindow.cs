@@ -10,6 +10,7 @@ using ImGuiNET;
 using System.Collections.Generic;
 using Lumina.Excel.Sheets;
 using FFXIVClientStructs.FFXIV.Common.Lua;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 
 namespace EmoteReact.Windows;
 
@@ -82,8 +83,16 @@ public class MainWindow : Window, IDisposable
 
         foreach (var character in plugin.emoteHandler.data)
         {
-            string name = character.Key.Split(" ")[0] + " " + character.Key.Split(" ")[1];
-            string world = character.Key.Split(" ")[2];
+            string name = "";
+            string world = "";
+            if (character.Key.Split(" ").Length == 3)
+            {
+                name = character.Key.Split(" ")[0] + " " + character.Key.Split(" ")[1];
+                world = character.Key.Split(" ")[2];
+            }
+            else
+                name = character.Key;
+
             foreach (var em in character.Value)
             {
                 DrawLine(name, world, em.Key, em.Value.command);
@@ -107,6 +116,8 @@ public class MainWindow : Window, IDisposable
     private void DrawHeader()
     {
         ImGui.TextUnformatted("Name");
+        ImGui.SameLine();
+        ImGuiComponents.HelpMarker("Keep empty to use for everyone.\nPersonal rules overwrite general rules.");
         ImGui.NextColumn();
         ImGui.TextUnformatted("Server");
         ImGui.NextColumn();
@@ -135,7 +146,13 @@ public class MainWindow : Window, IDisposable
         ImGui.TextUnformatted(reaction);
         ImGui.NextColumn();
 
-        if (ImGui.Checkbox($"##{name}{server}{emote}", ref plugin.emoteHandler.data[$"{name} {server}"][emote].isEnable))
+        string key = "";
+        if (server == string.Empty)
+            key = name;
+        else
+            key = $"{name} {server}";
+
+        if (ImGui.Checkbox($"##{key}{emote}", ref plugin.emoteHandler.data[key][emote].isEnable))
         {
 
         }
@@ -143,8 +160,8 @@ public class MainWindow : Window, IDisposable
 
         if (ImGuiComponents.IconButton(num++, FontAwesomeIcon.Trash))
         {
-            Plugin.Log.Debug($"add to remove : {name} {server} {emote}");
-            toRemove.Add(($"{name} {server}", emote));
+            Plugin.Log.Debug($"add to remove : {key} {emote}");
+            toRemove.Add((key, emote));
         }
         ImGui.NextColumn();
         ImGui.Separator();
@@ -189,6 +206,27 @@ public class MainWindow : Window, IDisposable
         ImGui.InputTextWithHint("##reactinput", "/Command to execute", ref inputReaction, 200);
         ImGui.NextColumn();
 
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.UserPlus))
+        {
+            var target = Plugin.TargetManager.Target;
+            if (target != null)
+            {
+                if (target.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Player)
+                {
+                    var player = (IPlayerCharacter)target;
+                    Plugin.Log.Debug($"target found {player.Name} {player.HomeWorld.Value.Name}");
+                    inputName = player.Name.ToString();
+                    inputWorld = player.HomeWorld.Value.Name.ToString();
+
+                }
+            }
+        }
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted("Fill info from target.");
+            ImGui.EndTooltip();
+        }
         ImGui.NextColumn();
 
         if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
@@ -196,6 +234,13 @@ public class MainWindow : Window, IDisposable
             if (inputName.Split(" ").Length == 2 && inputWorld != "World" && inputEmote != "Emote" && inputReaction != string.Empty)
             {
                 plugin.emoteHandler.AddEntry($"{inputName} {inputWorld}", inputEmoteInt, inputReaction, 0);
+                inputReaction = "";
+                inputEmote = "Emote";
+                inputEmoteInt = -1;
+            }
+            else if (inputName == string.Empty && inputEmote != "Emote" && inputReaction != string.Empty)
+            {
+                plugin.emoteHandler.AddEntry($"Common", inputEmoteInt, inputReaction, 0);
                 inputReaction = "";
                 inputEmote = "Emote";
                 inputEmoteInt = -1;
