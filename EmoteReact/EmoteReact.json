@@ -12,7 +12,6 @@
         "plugin",
         "rp"
     ],
-    "DalamudApiLevel": 11,
     "LoadRequiredState": 0,
     "LoadSync": false,
     "CanUnloadAsync": false,
